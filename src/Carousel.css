@@ -1,0 +1,52 @@
+.carousel-container {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .carousel {
+    position: relative;
+  }
+  
+  .course-slides {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+  
+  .course-slide {
+    flex: 0 0 100%;
+  }
+  
+  .course-slide.active {
+    display: block;
+  }
+  
+  .course-info {
+    text-align: center;
+  }
+  
+  .course-info img {
+    width: 100px; /* Adjust as needed */
+  }
+  
+  .prev,
+  .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 18px;
+    z-index: 1;
+  }
+  
+  .prev {
+    left: 0;
+  }
+  
+  .next {
+    right: 0;
+  }
+  
