@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/storage';
-import './upload.css'; // Import CSS for the CourseForm
+import './upload.css'; 
 
 function CourseForm({ onClose }) {
   const [courseName, setCourseName] = useState('');
@@ -22,14 +22,12 @@ function CourseForm({ onClose }) {
     try {
       setUploading(true);
 
-      // Upload file to Firebase Storage
       const fileRef = firebase.storage().ref().child(`courseFiles/${file.name}`);
       const snapshot = await fileRef.put(file);
 
-      // Get download URL of the uploaded file
       const fileUrl = await snapshot.ref.getDownloadURL();
 
-      // Save form data and file URL to Firebase Database
+ 
       const courseData = {
         courseName,
         year,
@@ -39,7 +37,6 @@ function CourseForm({ onClose }) {
 
       await firebase.database().ref('courses').push(courseData);
 
-      // Reset form fields
       setCourseName('');
       setYear('');
       setProfessor('');
@@ -48,7 +45,7 @@ function CourseForm({ onClose }) {
       setUploading(false);
       setUploadProgress(0);
 
-      onClose(); // Close the form modal
+      onClose(); 
     } catch (error) {
       console.error('Error uploading file:', error);
     }

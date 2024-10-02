@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import './Hero.css'; // You can define your styles here
+import React, { useState, useEffect } from 'react';
+import './Hero.css';
 import SignUpModal from './SignUpModal';
 import Upload from './upload.js';
-import firebase from 'firebase/compat/app'; // Import Firebase app
-import 'firebase/compat/auth'; // Import Firebase authentication module
-import CourseForm from './upload.js'; // Import the CourseForm component
+import firebase from 'firebase/compat/app'; 
+import 'firebase/compat/auth'; 
+import CourseForm from './upload.js'; 
 import logo from './assets/logo.png';
 import img1 from './assets/box1.jpg';
 import rightI from './assets/right-img.jpg';
 import Vector from './assets/vector.png';
 import Notes from './notes.js';
-import HomeworkList from './homework.js'; // Import the HomeworkList component
+import Chatbot from './chatbot.js';
+
+import HomeworkList from './homework.js'; 
 import loginicon from './assets/login.jpeg';
 import Productivity from './assets/productivity.jpg';
 import time from './assets/time.png';
@@ -18,17 +20,8 @@ import owl from './assets/owl.png';
 import math from './assets/math.jpeg';
 import Psychology from './assets/psy1.jpg';
 import Science from './assets/science.jpeg';
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCvNGVxOi2jCiBpL_gzNFZnKMK6-u7FsXw",
-  authDomain: "sub-hackathon.firebaseapp.com",
-  projectId: "sub-hackathon",
-  storageBucket: "sub-hackathon.appspot.com",
-  messagingSenderId: "155419562508",
-  appId: "1:155419562508:web:f2b212984cd64cf09fd429"
-};
-firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
+import { auth } from "./firebase"; 
+
 
 function Footer() {
   return (
@@ -44,9 +37,13 @@ function App() {
   const [showNotesContent, setShowNotes] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+
   const [showSearch, setShowSearch] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
   const [showHome, setShowHome] = useState(true);
-  const [showHomeworks, setShowHomeworks] = useState(false); // New state for Homeworks
+  const [showHomeworks, setShowHomeworks] = useState(false); 
 
   const handleNotesClick = () => {
     setShowNotes(true);
@@ -54,30 +51,57 @@ function App() {
     setShowUpload(false);
     setShowSearch(false);
     setShowHome(false);
-    setShowHomeworks(false); // Ensure Homeworks are hidden when Notes are shown
+    setShowHomeworks(false); 
+    setShowAI(false);
+
+  };
+  const handleAIClick = () => {
+    setShowAI(true);
+
+    setShowNotes(false);
+    setShowModal(false);
+    setShowUpload(false);
+    setShowSearch(false);
+    setShowHome(false);
+    setShowHomeworks(false); 
   };
 
-  const handleHomeworksClick = () => { // Function to handle Homeworks click
+  const handleHomeworksClick = () => { 
     setShowHomeworks(true);
     setShowNotes(false);
     setShowModal(false);
     setShowUpload(false);
     setShowSearch(false);
     setShowHome(false);
+    setShowAI(false);
+
   };
 
   const handleSignUpButtonClick = () => {
     setShowModal(true);
   };
    
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        setCurrentUser(user); 
+      } else {
+        setCurrentUser(null); 
+      }
+    });
 
+  
+    return () => unsubscribe();
+  }, []);
   const handleHomeButtonClick = () => {
     setShowHome(true);
     setShowNotes(false);
     setShowModal(false);
     setShowUpload(false);
     setShowSearch(false);
-    setShowHomeworks(false); // Ensure Homeworks are hidden when Home is shown
+    setShowHomeworks(false); 
+    setShowAI(false);
+
   };
 
   const handleCloseModal = () => {
@@ -116,13 +140,25 @@ function App() {
             <li><a href="#" onClick={handleHomeButtonClick}>Home</a></li>
             <li><a href="#" onClick={handleNotesClick}>Notes</a></li>
             <li><a href="#" onClick={handleHomeworksClick}>Homeworks</a></li>
-            <li><a href="#" onClick={handleUploadClick} >Upload</a></li>          </ul>
+            <li><a href="#" onClick={handleUploadClick} >Upload</a></li>    
+            
+            <li><a href="#" onClick={handleAIClick} >Use AI</a></li>    
+
+            
+                  </ul>
         </nav>
         <div className='signup-but'>
-          <button className='signup' onClick={handleSignUpButtonClick}>
-            <img src= {loginicon} className='loginicon' alt="Icon" />
-            <a>Sign Up | Sign In</a>
-          </button>
+        {currentUser ? (
+            <div className='username-display'>
+              <p>Welcome, {currentUser.email.split('@')[0]}!</p>
+            </div>
+          ) : (
+            <button className='signup' onClick={handleSignUpButtonClick}>
+              <img src={loginicon} className='loginicon' alt="Icon" />
+              <a>Sign Up | Sign In</a>
+            </button>
+          )}
+        
         </div>
       </div>
       {showNotesContent && <Notes onClose={handleCloseNotes} />}
@@ -231,7 +267,9 @@ function App() {
       {showModal && <SignUpModal onClose={handleCloseModal} />}
       {showUpload&& < Upload onClose={handleCloseUpload} />}
     
-      {showHomeworks && <HomeworkList />} {/* Render HomeworkList only when showHomeworks is true */}
+      {showHomeworks && <HomeworkList />} 
+      {showAI && <Chatbot />} 
+
       <Footer />
     </div>
   );

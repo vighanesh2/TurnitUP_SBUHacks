@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import { auth } from './firebase'; 
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'; 
 import './signup.css';
 
 function SignUpModal({ onClose }) {
@@ -8,12 +8,13 @@ function SignUpModal({ onClose }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null); 
   const [successMessage, setSuccessMessage] = useState('');
-  const [isSignIn, setIsSignIn] = useState(false); // State to track if user is signing in or signing up
+  const [isSignIn, setIsSignIn] = useState(false); 
 
   const handleSignUp = async () => {
     try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
-      setSuccessMessage('Sign up successful!'); // Set success message
+     
+      await createUserWithEmailAndPassword(auth, email, password);
+      setSuccessMessage('Sign up successful!');
       onClose();
     } catch (error) {
       setError(error.message);
@@ -22,8 +23,9 @@ function SignUpModal({ onClose }) {
 
   const handleSignIn = async () => {
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      setSuccessMessage('Sign in successful!'); // Set success message
+    
+      await signInWithEmailAndPassword(auth, email, password);
+      setSuccessMessage('Sign in successful!');
       onClose();
     } catch (error) {
       setError(error.message);
@@ -31,9 +33,9 @@ function SignUpModal({ onClose }) {
   };
 
   const handleToggle = () => {
-    setIsSignIn((prevIsSignIn) => !prevIsSignIn); // Toggle between sign-in and sign-up
-    setError(null); // Clear any previous error messages
-    setSuccessMessage(''); // Clear any previous success messages
+    setIsSignIn((prevIsSignIn) => !prevIsSignIn); 
+    setError(null); 
+    setSuccessMessage(''); 
   };
 
   return (
@@ -44,11 +46,21 @@ function SignUpModal({ onClose }) {
         {successMessage && <div className="success">{successMessage}</div>}
         <div className="form-group">
           <label htmlFor="email">Email:</label>
-          <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input 
+            type="email" 
+            id="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+          />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password:</label>
-          <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input 
+            type="password" 
+            id="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+          />
         </div>
         {error && <div className="error">{error}</div>}
         {isSignIn ? (
